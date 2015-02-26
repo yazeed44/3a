@@ -79,7 +79,7 @@ public class CustomersPanel extends javax.swing.JPanel implements CustomersTable
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable customersTable;
+    javax.swing.JTable customersTable;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 

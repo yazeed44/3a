@@ -442,6 +442,32 @@ public final class DBUtil {
     });
     }
     
+    public static void loadOrdersFromHostingPackage(final int hostingPackageId ,
+            final QueryDbListener<ArrayList<Order>> listener){
+        initializeDb();
+        
+        execute(new QueryJob(listener){
+
+            @Override
+            protected Object job(SQLiteConnection connection) throws Throwable {
+                
+                final String sql = "SELECT * FROM " + TABLE_ORDERS + " WHERE hostingPackage_id = " + hostingPackageId;
+                
+                final SQLiteStatement st = connection.prepare(sql);
+                
+                final ArrayList<Order> orders = new ArrayList<>();
+                
+                while(st.step()){
+                    orders.add(getOrder(st));
+                }
+                
+                st.dispose();
+                
+                return orders;
+            }
+        });
+    }
+    
     public static void updateHostingPackage(final HostingPackage toUpdatePackage
             , final UpdateDbListener<HostingPackage> updateResultListener){
         initializeDb();
@@ -603,6 +629,28 @@ public final class DBUtil {
                 
             }
         });
+    }
+    
+    public static void deleteOrdersRelatedToHostingPackages(final int hostingPackageId,final DeleteDbListener listener){
+        initializeDb();
+        
+        execute(new DeleteJob(listener){
+
+            @Override
+            protected Object job(SQLiteConnection connection) throws Throwable {
+                
+                final String sql = "DELETE FROM " + TABLE_ORDERS + " WHERE hostingPackage_id = " + hostingPackageId;
+                
+                final SQLiteStatement st = connection.prepare(sql);
+                
+                while(st.step()){
+                    
+                }
+                
+                return new Object();
+            }
+        });
+        
     }
     
     

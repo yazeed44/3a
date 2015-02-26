@@ -26,7 +26,7 @@ public class Main extends MainInterface {
     
     private final CustomersPanel mCustomersPanel = new CustomersPanel(this);
     private final OrdersPanel mOrdersPanel = new OrdersPanel(this);
-    private final HostingPackagesPanel mHostingPackagesPanel = new HostingPackagesPanel();
+    private final HostingPackagesPanel mHostingPackagesPanel = new HostingPackagesPanel(this);
     
     
     public Main() throws Exception{
@@ -43,7 +43,15 @@ public class Main extends MainInterface {
             setVisible(true);
         });
         
-        DBUtil.loadOrders(new QueryDbListener<ArrayList<Order>>(){
+       
+
+
+        notifyAboutNearEndedDomain();
+    }
+    
+    
+    private void notifyAboutNearEndedDomain(){
+         DBUtil.loadOrders(new QueryDbListener<ArrayList<Order>>(){
 
             @Override
             public void queriedSuccessfully(ArrayList<Order> result) {
@@ -69,9 +77,6 @@ public class Main extends MainInterface {
             public void failedToQuery(Throwable throwable) {
             }
         });
-
-
-        
     }
 
     /**

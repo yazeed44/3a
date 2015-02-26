@@ -107,7 +107,7 @@ public class OrdersPanel extends javax.swing.JPanel implements OrdersTable.Updat
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable ordersTable;
+    javax.swing.JTable ordersTable;
     // End of variables declaration//GEN-END:variables
 
     @Override

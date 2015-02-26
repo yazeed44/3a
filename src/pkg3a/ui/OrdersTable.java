@@ -29,7 +29,7 @@ import pkg3a.utils.Order;
  *
  * @author yazeed44
  */
-public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogListener,DBUtil.DeleteDbListener{
+public class OrdersTable extends BaseTable implements  EditOrderDialog.EditDialogListener,DBUtil.DeleteDbListener{
     
     private ArrayList<Order> mOrders;
     private final Frame mFrame;
@@ -43,80 +43,26 @@ public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogLi
         mOrders = orders;
         mListener = listener;
         setupModel();
-        setupRightClickListener();
+        setupMouseListener();
+        
+    }
+    @Override
+    protected void setupMouseListener() {
+        
+        if (mListener.shouldAllowClick()){
+            super.setupMouseListener();
+        }
+        else {
+            return ;
+        }
         
     }
     
     private void setupModel(){
     setModel(new OrdersModel());
     }
-     private void setupRightClickListener(){
-         
-         if (!mListener.shouldAllowClick()){
-             return;
-         }
-         
-        addMouseListener(new MouseAdapter(){
-        
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                //For linux
-                handleClick(e);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                //For mac os and windows
-                handleClick(e);
-            }
-        });
-                }
-     
-     private void handleClick(MouseEvent e){
-           int r = rowAtPoint(e.getPoint());
-        if (r >= 0 && r < getRowCount()) {
-            setRowSelectionInterval(r, r);
-        } else {
-            clearSelection();
-        }
-        
-        int rowindex = getSelectedRow();
-        if (rowindex < 0)
-            return;
-        
-        if (e.getComponent() instanceof JTable){
-            
-            final int id = mOrders.get(getSelectedRow()).id;
-            DBUtil.loadOrder(id, new QueryDbListener<Order>() {
-
-                @Override
-                public void queriedSuccessfully(Order result) {
-                      if (isDoubleClick(e)){
-                          showEditOrderDialog(result);
-                      }
-            else if (isRightClick(e)) {
-                showPopupItems(e,result);
-            }
-                }
-
-                @Override
-                public void failedToQuery(Throwable throwable) {
-                }
-            });
-            
-          
-            
-        }
-     }
-     
-     private boolean isDoubleClick(MouseEvent e){
-         return e.getClickCount() >= 2;
-     }
-     
-     private boolean isRightClick(MouseEvent e){
-         return e.isPopupTrigger();
-     }
-     
+    
+   
      private void showEditOrderDialog(final Order result){
        SwingUtilities.invokeLater(() -> {
            EditOrderDialog.showEditDialog(mFrame, result, OrdersTable.this);
@@ -268,6 +214,16 @@ public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogLi
     
     
 }
+
+    @Override
+    protected void onDoubleClickRow(int rowIndex) {
+        showEditOrderDialog(mOrders.get(rowIndex));
+    }
+
+    @Override
+    protected void onRightClickRow(int rowIndex, MouseEvent e) {
+        showPopupItems(e,mOrders.get(rowIndex));
+    }
     
     
     

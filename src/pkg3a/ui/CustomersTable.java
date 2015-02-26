@@ -28,7 +28,7 @@ import pkg3a.utils.Order;
  *
  * @author yazeed44
  */
-public class CustomersTable extends JTable  implements EditCustomerDialog.EditCustomerCallback{
+public class CustomersTable extends BaseTable  implements EditCustomerDialog.EditCustomerCallback{
     private  ArrayList<Customer> mCustomers;
     private final CustomersTableCallback mCallback;
     private final Frame mFrame;
@@ -38,84 +38,64 @@ public class CustomersTable extends JTable  implements EditCustomerDialog.EditCu
         mCallback = callback;
         mFrame = frame;
         setupTable();
-        setupClickListener();
+        setupMouseListener();
     }
     
     private void setupTable(){
     setModel(new CustomersModel());
     }
+
+    @Override
+    protected void setupMouseListener() {
+        
+        if (mCallback.shouldAllowClicks()){
+            super.setupMouseListener();
+        }
+        else {
+            return ;
+        }
+        
+    }
     
-    private void setupClickListener(){
-        
-        if (!mCallback.shouldAllowClicks()){
-            return;
-        }
-        
-    addMouseListener(new MouseAdapter(){
-     @Override
-            public void mouseReleased(MouseEvent e) {
-                //For linux
-                handleClick(e);
-            }
+    
+    
+    
+    void updateTable(final ArrayList<Customer> customers){
+    mCustomers = customers;
+    setupTable();
+    }
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                //For mac os and windows
-                handleClick(e);
-            }
-            
-            private void handleClick(MouseEvent e){
-           int r = rowAtPoint(e.getPoint());
-        if (r >= 0 && r < getRowCount()) {
-            setRowSelectionInterval(r, r);
-        } else {
-            clearSelection();
-        }
-        
-        int rowindex = getSelectedRow();
-        if (rowindex < 0)
-            return;
-        
-        if (e.getComponent() instanceof JTable){
-            
-            final int id = mCustomers.get(getSelectedRow()).id;
-            DBUtil.loadCustomer(id, new DBUtil.QueryDbListener<Customer>() {
+   
 
-                @Override
-                public void queriedSuccessfully(Customer result) {
-                      if (isDoubleClick(e)){
-                          showEditCustomerDialog(result);
-                      }
-            else if (isRightClick(e)) {
-                showPopupItems(e,result);
-            }
-                }
+    @Override
+    public void editedSuccessfully(EditCustomerDialog dialog) {
+        mCallback.onUpdateCustomerTable(this);
+        dialog.setVisible(false);
+    }
 
-                @Override
-                public void failedToQuery(Throwable throwable) {
-                }
-            });
+    @Override
+    public void failedToEdit(EditCustomerDialog dialog, Throwable error) {
+        
+    }
+
+    @Override
+    protected void onDoubleClickRow(int rowIndex) {
+        
+                showEditCustomerDialog(mCustomers.get(rowIndex));
             
-          
-            
-        }
-     }
-            
-            private boolean isDoubleClick(MouseEvent e){
-         return e.getClickCount() >= 2;
-     }
-     
-     private boolean isRightClick(MouseEvent e){
-         return e.isPopupTrigger();
-     }
-     
-     private void showEditCustomerDialog(final Customer customer){
+    }
+    
+    private void showEditCustomerDialog(final Customer customer){
        SwingUtilities.invokeLater(() -> {
            EditCustomerDialog.showEditCustomerDialog(mFrame, customer, CustomersTable.this);
        });
      }
-     
-        
+
+    @Override
+    protected void onRightClickRow(int rowIndex,MouseEvent event) {
+        showPopupItems(event,mCustomers.get(rowIndex));
+    }
+            
             private void showPopupItems(MouseEvent e,final Customer customer){
                JPopupMenu popup = createPopup(customer);
             popup.show(e.getComponent(), e.getX(), e.getY());     
@@ -206,28 +186,7 @@ public class CustomersTable extends JTable  implements EditCustomerDialog.EditCu
                 });
                        return detailsItem;
     }
-    
-    });
-    }
-    
-    
-    void updateTable(final ArrayList<Customer> customers){
-    mCustomers = customers;
-    setupTable();
-    }
 
-   
-
-    @Override
-    public void editedSuccessfully(EditCustomerDialog dialog) {
-        mCallback.onUpdateCustomerTable(this);
-        dialog.setVisible(false);
-    }
-
-    @Override
-    public void failedToEdit(EditCustomerDialog dialog, Throwable error) {
-        
-    }
     
     
     private class CustomersModel extends AbstractTableModel{
@@ -240,6 +199,7 @@ public class CustomersTable extends JTable  implements EditCustomerDialog.EditCu
         
         @Override
         public int getRowCount() {
+            
             return mCustomers.size();
         }
         
