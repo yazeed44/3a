@@ -76,7 +76,7 @@ public class Order implements QueryDbListener<Customer>  {
     
     public boolean domainExists(){
         
-        return mDomain != null && mDomain.length() > 0 && !mDomain.equals(NO_DOMAIN);
+        return mDomain != null && mDomain.length() > 0 && !mDomain.equals(NO_DOMAIN) && !mDomain.equals(EMPTY);
         
     }
     
@@ -166,6 +166,11 @@ public class Order implements QueryDbListener<Customer>  {
         }
         
         public boolean hasDomainExpired(){
+            if (!domainExists()){
+                return false;
+            }
+            
+            
             final java.util.Date now = Calendar.getInstance().getTime();
             return mExpireDomainDate.before(now) || mExpireDomainDate.equals(now) ;
         }

@@ -419,6 +419,29 @@ public final class DBUtil {
         });
     }
     
+    public static void loadOrdersFromCustomer(final int customerId , final QueryDbListener<ArrayList<Order>> listener){
+    initializeDb();
+    
+    execute(new QueryJob(listener){
+
+        @Override
+        protected Object job(SQLiteConnection connection) throws Throwable {
+            final String sql = "SELECT * FROM " + TABLE_ORDERS + " WHERE customer_id = " + customerId;
+            
+            final SQLiteStatement st = connection.prepare(sql);
+            
+            final ArrayList<Order> orders = new ArrayList<>();
+            
+            while(st.step()){
+                orders.add(getOrder(st));
+            }
+            st.dispose();
+            
+            return orders;
+        }
+    });
+    }
+    
     public static void updateHostingPackage(final HostingPackage toUpdatePackage
             , final UpdateDbListener<HostingPackage> updateResultListener){
         initializeDb();
@@ -499,7 +522,7 @@ public final class DBUtil {
     }
     
     public static void deleteHostingPackage(final int id
-            ,final DeleteDbListener<HostingPackage> deleteResultListener){
+            ,final DeleteDbListener deleteResultListener){
         initializeDb();
         
         execute(new DeleteJob(deleteResultListener){
@@ -524,7 +547,7 @@ public final class DBUtil {
                 
     }
     
-    public static void deleteCustomer(final int id,final DeleteDbListener<Customer> deleteResultListener){
+    public static void deleteCustomer(final int id,final DeleteDbListener deleteResultListener){
         initializeDb();
         
         execute(new DeleteJob(deleteResultListener){
@@ -542,7 +565,7 @@ public final class DBUtil {
         });
     }
     
-    public static void deleteOrder(final int id,final DeleteDbListener<Order> deleteResultListener){
+    public static void deleteOrder(final int id,final DeleteDbListener deleteResultListener){
         initializeDb();
         
         execute(new DeleteJob(deleteResultListener){
@@ -555,6 +578,29 @@ public final class DBUtil {
                 
                 
                 return new Object();
+            }
+        });
+    }
+    
+    public static void deleteOrdersRelatedToCustomer(final int customerId , final DeleteDbListener listener){
+        initializeDb();
+        
+        execute(new DeleteJob(listener){
+
+            @Override
+            protected Object job(SQLiteConnection connection) throws Throwable {
+                final String sql = "DELETE FROM " + TABLE_ORDERS + " WHERE customer_id = " + customerId;
+                
+                final SQLiteStatement st = connection.prepare(sql);
+                
+                
+                
+                while(st.step()){
+                    
+                }
+                
+                return new Object();
+                
             }
         });
     }
@@ -743,7 +789,7 @@ public final class DBUtil {
         void failedToUpdate(Throwable error);
     }
     
-    public static interface DeleteDbListener<RESULT>{
+    public static interface DeleteDbListener{
         void deletedSuccessfully();
         void failedToDelete(Throwable error);
     }

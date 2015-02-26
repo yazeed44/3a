@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
@@ -28,7 +29,7 @@ import pkg3a.utils.Order;
  *
  * @author yazeed44
  */
-public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogListener,DBUtil.DeleteDbListener<Order>{
+public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogListener,DBUtil.DeleteDbListener{
     
     private ArrayList<Order> mOrders;
     private final Frame mFrame;
@@ -91,16 +92,8 @@ public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogLi
                 @Override
                 public void queriedSuccessfully(Order result) {
                       if (isDoubleClick(e)){
-                          
-                          SwingUtilities.invokeLater(new Runnable(){
-
-                              @Override
-                              public void run() {
-                                  EditOrderDialog.showEditDialog(mFrame, result, OrdersTable.this);
-                              }
-                          });
-                
-            }
+                          showEditOrderDialog(result);
+                      }
             else if (isRightClick(e)) {
                 showPopupItems(e,result);
             }
@@ -122,6 +115,12 @@ public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogLi
      
      private boolean isRightClick(MouseEvent e){
          return e.isPopupTrigger();
+     }
+     
+     private void showEditOrderDialog(final Order result){
+       SwingUtilities.invokeLater(() -> {
+           EditOrderDialog.showEditDialog(mFrame, result, OrdersTable.this);
+       });
      }
      
         
@@ -146,7 +145,20 @@ public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogLi
             private JMenuItem createDeleteItem(final Order order){
                 final JMenuItem deleteItem = new JMenuItem("حذف");
                 deleteItem.addActionListener((ActionEvent e) -> {
-                    DBUtil.deleteOrder(order.id,OrdersTable.this);
+                    SwingUtilities.invokeLater(() -> {
+                        final String msg = "هل انت متأكد من حذف هذا الطلب ؟";
+                        final int result = JOptionPane.showConfirmDialog(OrdersTable.this, msg, "تأكيد",
+                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+                        
+                        if (result == JOptionPane.YES_OPTION){
+                            DBUtil.deleteOrder(order.id,OrdersTable.this);
+                        }
+                        
+                        else {
+                            
+                        }
+                    });
+                    
                 });
                 
                 return deleteItem;
@@ -196,7 +208,7 @@ public class OrdersTable extends JTable implements  EditOrderDialog.EditDialogLi
                 detailsItem.addActionListener(new ActionListener(){
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        EditOrderDialog.showEditDialog(mFrame, order, OrdersTable.this);
+                        showEditOrderDialog(order);
                     }
                     }
                 );

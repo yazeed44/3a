@@ -24,7 +24,7 @@ public class Main extends MainInterface {
     
 
     
-    private final CustomersPanel mCustomersPanel = new CustomersPanel();
+    private final CustomersPanel mCustomersPanel = new CustomersPanel(this);
     private final OrdersPanel mOrdersPanel = new OrdersPanel(this);
     private final HostingPackagesPanel mHostingPackagesPanel = new HostingPackagesPanel();
     
@@ -50,13 +50,13 @@ public class Main extends MainInterface {
                 
                 String toBeNotifiedOrders = "";
                 for(final Order order : result){
-                    if (order.isDomainNearExpire()){
+                    if (order.isDomainNearExpire() || order.hasDomainExpired()){
                         toBeNotifiedOrders += order.getDomain() + "\n";
                     }
                 }
                 
                 if (toBeNotifiedOrders.length() > 0){
-                     String dialogMsg = "اسماء الدومينات اللتي سوف تنتهي خلال 15 يوم أو اقل "+ "\n";
+                     String dialogMsg =  "اسماء الدومينات اللتي سوف تنتهي بعد 30 يوم أو اقل , أو انتهت فعلا"+ "\n";
                      dialogMsg += toBeNotifiedOrders;
                      
                      JOptionPane.showMessageDialog(Main.this, dialogMsg, "تنبيه", JOptionPane.INFORMATION_MESSAGE);
@@ -93,6 +93,24 @@ public class Main extends MainInterface {
         System.out.println("started adding Customer ");
         //TODO
         
+        AddCustomerDialog.showAddCustomerDialog(this, new AddCustomerDialog.AddCustomerCallback() {
+
+            @Override
+            public void addedSuccessfully(AddCustomerDialog dialog) {
+                updateCustomersTable();
+                dialog.setVisible(false);
+            }
+
+            @Override
+            public void failedToAdd(AddCustomerDialog dialog, Throwable error) {
+                System.out.println(error.getMessage());
+            }
+        });
+        
+    }
+    
+    private void updateCustomersTable(){
+    mCustomersPanel.updateTable();
     }
     
     public void addOrder() {
@@ -116,7 +134,7 @@ public class Main extends MainInterface {
         });
     }
     
-    private void updateOrdersTable(){
+     void updateOrdersTable(){
         mOrdersPanel.onUpdate();
     }
 
@@ -145,4 +163,6 @@ public class Main extends MainInterface {
         
        new FindExpiredDomainsInRangeDialog(this,true).setVisible(true);
     }
+
+    
 }

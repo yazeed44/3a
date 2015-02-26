@@ -5,17 +5,42 @@
  */
 package pkg3a.ui;
 
+import java.awt.Frame;
+import java.util.ArrayList;
+
+import pkg3a.utils.Customer;
+import pkg3a.utils.DBUtil;
+import pkg3a.utils.DBUtil.QueryDbListener;
+import pkg3a.utils.Order;
+
 /**
  *
  * @author yazeed44
  */
-public class CustomersPanel extends javax.swing.JPanel {
+public class CustomersPanel extends javax.swing.JPanel implements CustomersTable.CustomersTableCallback {
 
+    
+    private ArrayList<Customer> mCustomers;
+    private Main mMainFrame;
     /**
      * Creates new form CustomersPanel
      */
-    public CustomersPanel() {
-        initComponents();
+    public CustomersPanel(final Main mainFrame) {
+        
+        mMainFrame = mainFrame;
+        DBUtil.loadCustomers(new QueryDbListener<ArrayList<Customer>>(){
+
+            @Override
+            public void queriedSuccessfully(ArrayList<Customer> result) {
+                mCustomers = result;
+                initComponents();
+            }
+
+            @Override
+            public void failedToQuery(Throwable throwable) {
+            }
+        });
+        
     }
 
     /**
@@ -27,19 +52,79 @@ public class CustomersPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        customersTable = new CustomersTable(mMainFrame,mCustomers,this);
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(430, 318));
+
+        customersTable.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        customersTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(customersTable);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable customersTable;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void onUpdateCustomerTable(CustomersTable customersTable) {
+        DBUtil.loadCustomers(new QueryDbListener<ArrayList<Customer>>(){
+
+            @Override
+            public void queriedSuccessfully(ArrayList<Customer> result) {
+                mCustomers = result;
+                customersTable.updateTable(result);
+                
+            }
+
+            @Override
+            public void failedToQuery(Throwable throwable) {
+            }
+        });
+    }
+
+    void updateTable() {
+        
+        DBUtil.loadCustomers(new QueryDbListener<ArrayList<Customer>>(){
+
+            @Override
+            public void queriedSuccessfully(ArrayList<Customer> result) {
+                mCustomers = result;
+                ((CustomersTable)customersTable).updateTable(result);
+            }
+
+            @Override
+            public void failedToQuery(Throwable throwable) {
+            }
+        });
+        
+        
+    }
+
+    @Override
+    public boolean shouldAllowClicks() {
+        return true;
+    }
+
+    @Override
+    public void onUpdateOrdersTable() {
+       mMainFrame.updateOrdersTable();
+    }
 }

@@ -79,6 +79,8 @@ public class OrdersPanel extends javax.swing.JPanel implements OrdersTable.Updat
         jScrollPane1 = new javax.swing.JScrollPane();
         ordersTable = new OrdersTable(mFrame,mOrders,this);
 
+        setPreferredSize(new java.awt.Dimension(430, 318));
+
         jScrollPane1.setPreferredSize(new java.awt.Dimension(0, 0));
 
         ordersTable.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
