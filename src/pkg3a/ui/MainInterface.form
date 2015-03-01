@@ -46,7 +46,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="KacstOne" size="12" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="&#x628;&#x62d;&#x62b; &#x639;&#x646; &#x62a;&#x648;&#x627;&#x631;&#x64a;&#x62e; &#x627;&#x644;&#x62a;&#x62c;&#x62f;&#x64a;&#x62f;"/>
+                <Property name="text" type="java.lang.String" value="&#x62a;&#x642;&#x631;&#x64a;&#x631; &#x639;&#x646; &#x623;&#x633;&#x645;&#x627;&#x621; &#x627;&#x644;&#x646;&#x637;&#x627;&#x642;&#x627;&#x62a; &#x628;&#x64a;&#x646; &#x62a;&#x627;&#x631;&#x64a;&#x62e;&#x64a;&#x646;"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="findEndDomainDatesMenuItemActionPerformed"/>

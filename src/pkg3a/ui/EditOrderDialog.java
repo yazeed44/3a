@@ -38,6 +38,7 @@ public class EditOrderDialog extends AddOrderDialog implements UpdateDbListener<
         setupNote();
         setupEditButton();
         setupTitle();
+        setupHostingPackageExpireDate();
     }
     public static void showEditDialog(Frame parent , final Order order , final EditDialogListener listener){
       new EditOrderDialog(parent,order,listener).setVisible(true);
@@ -64,7 +65,7 @@ public class EditOrderDialog extends AddOrderDialog implements UpdateDbListener<
     }
     
     private void setupTotalCost(){
-        totalCostText.setText(mOrder.totalCost + "");
+        totalCostText.setText(mOrder.getTotalCostWithoutCurrency() + "");
     }
     
     private void setupHostingPackage(){
@@ -104,11 +105,31 @@ public class EditOrderDialog extends AddOrderDialog implements UpdateDbListener<
         setTitle("تعديل طلبية");
     }
     
+    private void setupHostingPackageExpireDate(){
+        
+        if (mOrder.getHostingPackageEndDateMillis() != -1){
+             hostingPackageExpireDate.setEnabled(true);
+            final Calendar expireCalendar = Calendar.getInstance();
+            expireCalendar.setTime(new Date(mOrder.getHostingPackageEndDateMillis()));
+            hostingPackageExpireDate.setSelectedDate(expireCalendar);
+       
+        }
+        
+        else {
+            
+            hostingPackageExpireDate.setEnabled(false);
+            
+        }
+    
+        
+    }
+    
     
     
     @Override
     protected void submitOrder() {
         final Order order = createOrderBuilder(mOrder.id).setBeginingDate(mOrder.getBeginingDateMillis())
+                .isActivated(mOrder.isActivated())
                 .build();
         
         DBUtil.updateOrder(order,this);

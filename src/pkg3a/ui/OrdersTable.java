@@ -10,18 +10,15 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import pkg3a.utils.DBUtil;
-import pkg3a.utils.DBUtil.QueryDbListener;
 import pkg3a.utils.DBUtil.UpdateDbListener;
 import pkg3a.utils.Order;
 
@@ -36,8 +33,8 @@ public class OrdersTable extends BaseTable implements  EditOrderDialog.EditDialo
     public static final Color NEAR_EXPIRE_ROW_COLOR = Color.ORANGE;
     public static final Color EXPIRED_ROW_COLOR = Color.RED;
     public static final Color UNACTIVE_ROW_COLOR = Color.GRAY;
-    private final UpdateListener mListener;
-    public OrdersTable(final Frame frame , final ArrayList<Order> orders , final UpdateListener listener){
+    private final UpdateOrdersListener mListener;
+    public OrdersTable(final Frame frame , final ArrayList<Order> orders , final UpdateOrdersListener listener){
         super();
         mFrame = frame;
         mOrders = orders;
@@ -51,9 +48,6 @@ public class OrdersTable extends BaseTable implements  EditOrderDialog.EditDialo
         
         if (mListener.shouldAllowClick()){
             super.setupMouseListener();
-        }
-        else {
-            return ;
         }
         
     }
@@ -232,12 +226,13 @@ public class OrdersTable extends BaseTable implements  EditOrderDialog.EditDialo
     private class OrdersModel extends AbstractTableModel{
         
         private final String mCustomerCol = "اسم العميل";
+        private final String mCompanyNameCol = "إسم الشركة";
         private final String mDomainCol = "الدومين";
         private final String mBeginingDateCol = "تاريخ الطلبية";
         
         
         
-        private final String[] mColumns = new String[]{mCustomerCol,mBeginingDateCol,mDomainCol};
+        private final String[] mColumns = new String[]{mCustomerCol,mCompanyNameCol,mBeginingDateCol,mDomainCol};
 
         @Override
         public int getRowCount() {
@@ -261,6 +256,7 @@ public class OrdersTable extends BaseTable implements  EditOrderDialog.EditDialo
             switch(mColumns[columnIndex]){
                 
                 case mCustomerCol:return order.getCustomer().name; 
+                case mCompanyNameCol:return order.getCustomer().company;
                 case mDomainCol:return order.getDomain();
                 case mBeginingDateCol:return order.getBeginingDateFormatted();
                 default:return "لايوجد";
@@ -271,7 +267,7 @@ public class OrdersTable extends BaseTable implements  EditOrderDialog.EditDialo
     }
     
     
-    public static interface UpdateListener {
+    public static interface UpdateOrdersListener {
         void onUpdateTable(OrdersTable ordersTable);
         boolean shouldAllowClick();
     }

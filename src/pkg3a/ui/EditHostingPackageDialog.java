@@ -45,12 +45,12 @@ public class EditHostingPackageDialog extends AddHostingPackageDialog implements
     }
     
     private void setupStorageSpace(){
-        storageSpaceText.setText(mToEditHostingPackage.storageSpace);
+        storageSpaceText.setText(mToEditHostingPackage.getStorageSpaceWithoutUnit());
         
     }
     
     private void setupMonthlyOffer(){
-        monthlyOfferText.setText(mToEditHostingPackage.monthlyPackageOffer);
+        monthlyOfferText.setText(mToEditHostingPackage.getMonthlyPackageOfferWithoutUnit());
         
     }
     
@@ -59,7 +59,7 @@ public class EditHostingPackageDialog extends AddHostingPackageDialog implements
     }
     
     private void setupYearCost(){
-        yearPriceText.setText(mToEditHostingPackage.yearCost + "");
+        yearPriceText.setText(mToEditHostingPackage.getYearCostWithoutUnit());
         
     }
     

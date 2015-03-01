@@ -65,7 +65,7 @@ public abstract class MainInterface extends javax.swing.JFrame {
         jMenu1.add(addOrderMenuItem);
 
         findEndDomainDatesMenuItem.setFont(new java.awt.Font("KacstOne", 1, 12)); // NOI18N
-        findEndDomainDatesMenuItem.setText("بحث عن تواريخ التجديد");
+        findEndDomainDatesMenuItem.setText("تقرير عن أسماء النطاقات بين تاريخين");
         findEndDomainDatesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 findEndDomainDatesMenuItemActionPerformed(evt);

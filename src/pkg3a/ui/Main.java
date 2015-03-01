@@ -152,7 +152,6 @@ public class Main extends MainInterface {
 
             @Override
             public void failedToAdd(AddOrderDialog dialog , Throwable throwable) {
-                System.out.println(throwable.getMessage());
             }
         });
     }
@@ -170,7 +169,16 @@ public class Main extends MainInterface {
 
     @Override
     void onClickAddOrder(ActionEvent evt) {
-        addOrder();
+        if (mCustomersPanel.customersTable.getRowCount() > 0){
+            //Customers exist
+            addOrder();
+        }
+        else {
+            //There's no customers
+            JOptionPane.showMessageDialog(this, "يجب إضافة عملاء الى قاعدة البيانات أولا", "خطأ", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        
     }
 
     @Override

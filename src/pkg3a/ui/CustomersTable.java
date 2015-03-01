@@ -140,7 +140,7 @@ public class CustomersTable extends BaseTable  implements EditCustomerDialog.Edi
 
                                     @Override
                                     public void run() {
-                                        final String dialogMsg = customer.name + "مرتبط بطلبيات , هل تريد حذفها مع العميل ؟";
+                                        final String dialogMsg = customer.name  + " مرتبط بطلبيات ," + " هل تريد حذف العميل مع الطلبيات ؟ ";
                                         
                                         final int result = JOptionPane.showConfirmDialog(CustomersTable.this, dialogMsg, "تأكيد", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null);
                                         

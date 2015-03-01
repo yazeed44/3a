@@ -16,7 +16,7 @@ import pkg3a.utils.Order;
  *
  * @author yazeed44
  */
-public class FindExpiredDomainsInRangeDialog extends javax.swing.JDialog implements OrdersTable.UpdateListener {
+public class FindExpiredDomainsInRangeDialog extends javax.swing.JDialog implements OrdersTable.UpdateOrdersListener {
 
     
     private ArrayList<Order> mOrders;

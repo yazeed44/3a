@@ -53,5 +53,7 @@ public final class DBConstants {
     
     public static final int COLUMN_IS_ACTIVATED_INDEX = 9;
     
+    public static final int COLUMN_HOSTING_PACKAGE_END_DATE_INDEX = 10;
+    
     public static final String DB_NAME = "db";
 }

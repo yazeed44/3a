@@ -112,7 +112,7 @@ import pkg3a.utils.ViewUtil;
                             
                             else {
                                 SwingUtilities.invokeLater(() -> {
-                                    final String dialogMsg = hostingPackage.name + "مرتبط بطلبيات , هل تريد حذفها مع الباقة ؟";
+                                    final String dialogMsg = hostingPackage.name + " مرتبطة بطلبيات , " + "هل تريد حذف الباقة مع الطلبيات ؟ " ;
                                     
                                     final int result = JOptionPane.showConfirmDialog(HostingPackagesTable.this, dialogMsg, "تأكيد", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null);
                                     
@@ -229,8 +229,8 @@ import pkg3a.utils.ViewUtil;
             switch(mColumns[columnIndex]){
             
                 case mPackageNameCol:return hostingPackage.name;
-                case mStorageSpaceCol : return hostingPackage.storageSpace;
-                case mPriceCol:return hostingPackage.yearCost + "";
+                case mStorageSpaceCol : return hostingPackage.getStorageSpaceWithUnit();
+                case mPriceCol:return hostingPackage.getYearCostWithUnit();
                 
                 default : return null;
             }

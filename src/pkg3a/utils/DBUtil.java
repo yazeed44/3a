@@ -81,9 +81,9 @@ public final class DBUtil {
     
     private static void bindHostingPackage(final SQLiteStatement st , final HostingPackage hostingPackage) throws SQLiteException{
         st.bind(COLUMN_NAME_INDEX, hostingPackage.name)
-                        .bind(COLUMN_YEAR_COST_INDEX, hostingPackage.yearCost)
-                        .bind(COLUMN_STORAGE_SPACE_INDEX, hostingPackage.storageSpace)
-                        .bind(COLUMN_MONTHLY_OFFER_INDEX, hostingPackage.monthlyPackageOffer)
+                        .bind(COLUMN_YEAR_COST_INDEX, hostingPackage.getYearCostAsInteger())
+                        .bind(COLUMN_STORAGE_SPACE_INDEX, hostingPackage.getStorageSpaceWithoutUnit())
+                        .bind(COLUMN_MONTHLY_OFFER_INDEX, hostingPackage.getMonthlyPackageOfferWithoutUnit())
                         .bind(COLUMN_EMAILS_COUNT_INDEX, hostingPackage.emailsCount);
     }
     
@@ -170,9 +170,9 @@ public final class DBUtil {
                 
                 parts.append("INSERT INTO ")
                         .append(DBConstants.TABLE_ORDERS)
-                        .append("(domain,beginingDate,totalCost,domainEndDate,domainCost,customer_id,hostingPackage_id,note,isActivated) ")
+                        .append("(domain,beginingDate,totalCost,domainEndDate,domainCost,customer_id,hostingPackage_id,note,isActivated,hostingPackageEndDate) ")
                         .append("VALUES (")
-                        .appendParams(9)
+                        .appendParams(10)
                         .append(");");
                 
                 System.out.println("The statment is  " + parts.toString());    
@@ -193,13 +193,14 @@ public final class DBUtil {
     private static void bindOrder(final SQLiteStatement st , final Order order) throws SQLiteException{
          st.bind(COLUMN_DOMAIN_INDEX, order.domainExists() ? order.getDomain() : null)
                         .bind(COLUMN_BEGINING_DATE_INDEX, order.getBeginingDateMillis())
-                        .bind(COLUMN_TOTAL_COST_INDEX, order.totalCost)
+                        .bind(COLUMN_TOTAL_COST_INDEX, order.getTotalCostWithoutCurrency())
                         .bind(COLUMN_DOMAIN_END_DATE_INDEX, order.getEndDomainDateMillis() == -1 ? null:order.getEndDomainDateMillis() + "")
                         .bind(COLUMN_DOMAIN_COST_INDEX, order.domainCost == 0 ? null:order.domainCost+"")
                         .bind(COLUMN_CUSTOMER_ID_INDEX, order.mCustomerId)
                         .bind(COLUMN_HOSTING_PACKAGE_ID_INDEX, order.hostingPackageId == -1 ? null:order.hostingPackageId+"")
                         .bind(COLUMN_NOTE_INDEX,order.isNoteValid() ? order.note : null)
                         .bind(COLUMN_IS_ACTIVATED_INDEX, order.isActivated() ? 1:0)
+                        .bind(COLUMN_HOSTING_PACKAGE_END_DATE_INDEX, order.getHostingPackageEndDateMillis() == -1 ? null:order.getHostingPackageEndDateMillis()+ "")
                  ;
     }
     
@@ -213,7 +214,7 @@ public final class DBUtil {
             @Override
             protected Object job(SQLiteConnection connection) throws Throwable {
                 
-                final SQLiteStatement st = connection.prepare("SELECT * FROM " + DBConstants.TABLE_HOSTING_PACKAGES
+                final SQLiteStatement st = connection.prepare("SELECT * FROM " + TABLE_HOSTING_PACKAGES
                 + " WHERE _id = " + id);
                 
                 st.step();
@@ -360,10 +361,11 @@ public final class DBUtil {
                         .setDomain(st.columnString(COLUMN_DOMAIN_INDEX))
                         .setDomainCost(st.columnInt(COLUMN_DOMAIN_COST_INDEX))
                         .setDomainEndDate(st.columnLong(COLUMN_DOMAIN_END_DATE_INDEX))
-                        .setHostingPackage(st.columnInt(COLUMN_HOSTING_PACKAGE_ID_INDEX))
+                        .setHostingPackage(st.columnInt(COLUMN_HOSTING_PACKAGE_ID_INDEX) == 0 ? -1:st.columnInt(COLUMN_HOSTING_PACKAGE_ID_INDEX))
                         .setTotalCost(st.columnInt(COLUMN_TOTAL_COST_INDEX))
                         .setNote(st.columnString(COLUMN_NOTE_INDEX))
                         .isActivated(st.columnInt(COLUMN_IS_ACTIVATED_INDEX) == 1)
+                        .setHostingPackageEndDate(st.columnLong(COLUMN_HOSTING_PACKAGE_END_DATE_INDEX) == 0 ? -1:st.columnLong(COLUMN_HOSTING_PACKAGE_END_DATE_INDEX))
                         .build();
     }
     
@@ -533,7 +535,7 @@ public final class DBUtil {
                 
                 final String statement = "UPDATE " + TABLE_ORDERS + " SET domain=?"
                         +" ,beginingDate=? , totalCost=? , domainEndDate=? , domainCost=? , "
-                        + "customer_id=? , hostingPackage_id =? , note=? , isActivated=? WHERE _id = " + toUpdateOrder.id +";" 
+                        + "customer_id=? , hostingPackage_id =? , note=? , isActivated=? ,hostingPackageEndDate=? WHERE _id = " + toUpdateOrder.id +";" 
                         ;
                 
                 final SQLiteStatement st = connection.prepare(statement);

@@ -16,7 +16,7 @@ import pkg3a.utils.Order;
  *
  * @author yazeed44
  */
-public class OrdersPanel extends javax.swing.JPanel implements OrdersTable.UpdateListener  {
+public class OrdersPanel extends javax.swing.JPanel implements OrdersTable.UpdateOrdersListener  {
 
     
     private ArrayList<Order> mOrders;

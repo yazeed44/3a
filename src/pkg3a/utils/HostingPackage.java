@@ -21,18 +21,20 @@ public class HostingPackage {
             .build();
     
     public final String name;
-    public final String storageSpace;
-    public final String monthlyPackageOffer;
+    private final String mStorageSpace;
+    private final String mMonthlyPackageOffer;
     public final String emailsCount;
-    public final int yearCost;
+    private final int mYearCost;
     public final int id;
+    
+    public static final String UNIT_MB = "MB";
     
     private HostingPackage(final Builder builder){
         name = builder.mName;
-        storageSpace = builder.mStorageSpace;
-        monthlyPackageOffer = builder.mMonthlyPackageOffer;
+        mStorageSpace = builder.mStorageSpace;
+        mMonthlyPackageOffer = builder.mMonthlyPackageOffer;
         emailsCount = builder.mEmailsCount;
-        yearCost = builder.mYearCost;
+        mYearCost = builder.mYearCost;
         id = builder.mId;
     }
 
@@ -40,13 +42,6 @@ public class HostingPackage {
     public String toString() {
         return name;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        return hash;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -59,6 +54,64 @@ public class HostingPackage {
         return this.id == other.id;
     }
     
+    public String getMonthlyPackageOfferWithUnit(){
+        if (!isStringValid(mMonthlyPackageOffer)){
+            return null;
+        }
+        
+        else {
+            return mMonthlyPackageOffer + " " + UNIT_MB;
+        }
+        
+        
+    }
+    
+    public String getMonthlyPackageOfferWithoutUnit(){
+        if (!isStringValid(mMonthlyPackageOffer)){
+            return null;
+        }
+        
+        else {
+            return mMonthlyPackageOffer;
+        }
+    }
+    
+    public String getStorageSpaceWithUnit(){
+        if (!isStringValid(mStorageSpace)){
+            return null;
+        }
+        
+        else {
+            return mStorageSpace + " " + UNIT_MB;
+        }
+    }
+    
+    public String getStorageSpaceWithoutUnit(){
+        if (!isStringValid(mStorageSpace)){
+            return null;
+        }
+        
+        else {
+            return mStorageSpace;
+        }
+    }
+    
+    
+    private boolean isStringValid(final String s){
+        return s != null && s.length() > 0;
+    }
+    
+    public String getYearCostWithUnit(){
+        return mYearCost + " "+Order.CURRENCY;
+    }
+    
+    public String getYearCostWithoutUnit(){
+        return mYearCost + "";
+    }
+    
+    public int getYearCostAsInteger(){
+        return mYearCost;
+    }
     
     
     

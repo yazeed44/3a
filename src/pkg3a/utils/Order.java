@@ -5,13 +5,10 @@
  */
 package pkg3a.utils;
 
-import datechooser.model.DateUtils;
-import java.io.File;
 import java.sql.Date;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import javax.swing.Icon;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import pkg3a.utils.DBUtil.QueryDbListener;
@@ -20,7 +17,7 @@ import pkg3a.utils.DBUtil.QueryDbListener;
  *
  * @author yazeed44
  */
-public class Order implements QueryDbListener<Customer>  {
+public final class Order implements QueryDbListener<Customer>  {
     
     public static final String EMPTY = "لايوجد";
     
@@ -42,13 +39,16 @@ public class Order implements QueryDbListener<Customer>  {
     public int hostingPackageId;
      final int mCustomerId;
     private final Date mBeginingDate; 
-    public final int totalCost;
+    private final int totalCost;
     public final int domainCost;
-    private final Date mExpireDomainDate;
+    private final Date mDomainExpireDate;
     public final int id;
     private  Customer mCustomer;
     public final String note;
     private boolean mIsActivated;
+    private final Date mHostingPackageExpireDate;
+    
+    public static final String CURRENCY = "SR";
     
     
     
@@ -62,9 +62,10 @@ public class Order implements QueryDbListener<Customer>  {
         mBeginingDate = builder.mBeginingDate;
         totalCost = builder.mTotalCost;
         domainCost = builder.mDomainCost;
-        mExpireDomainDate = builder.mDomainExpireDate;
+        mDomainExpireDate = builder.mDomainExpireDate;
         note = builder.mNote;
         mIsActivated = builder.mIsActivated;
+        mHostingPackageExpireDate = builder.mHostingPackageExpireDate;
         
         
         if (mCustomerId != -1){
@@ -114,7 +115,7 @@ public class Order implements QueryDbListener<Customer>  {
         public String getEndDomainDateFormatted(){
             
             if (domainExists()){
-             return mExpireDomainDate.toLocalDate().format(DateTimeFormatter.ISO_DATE);
+             return mDomainExpireDate.toLocalDate().format(DateTimeFormatter.ISO_DATE);
              
             }
             else {
@@ -125,7 +126,11 @@ public class Order implements QueryDbListener<Customer>  {
         }
         
         public String getTotalCostWithCurrency(){
-            return totalCost + " SR";
+            return totalCost + CURRENCY;
+        }
+        
+        public String getTotalCostWithoutCurrency(){
+            return totalCost + "";
         }
         
         public long getBeginingDateMillis(){
@@ -135,29 +140,35 @@ public class Order implements QueryDbListener<Customer>  {
         
         public long getEndDomainDateMillis(){
             
-            if (mExpireDomainDate == null){
+            if (mDomainExpireDate == null){
                 return -1;
             }
             else {
-                return mExpireDomainDate.getTime();
+                return mDomainExpireDate.getTime();
             }
             
             
         }
         
-        public boolean isDomainNearExpire(){
-            
-            if (!domainExists()){
-                return false;
+        public long getHostingPackageEndDateMillis(){
+            if (mHostingPackageExpireDate == null){
+                return -1;
             }
             
-            if (!isActivated()){
+            else {
+                return mHostingPackageExpireDate.getTime();
+            }
+        }
+        
+        public boolean isDomainNearExpire(){
+            
+            if (!domainExists() || !isActivated()){
                 return false;
             }
             
             final java.util.Date now = Calendar.getInstance().getTime();
             
-            final DateTime nowTime = new DateTime(now),expireTime = new DateTime(mExpireDomainDate);
+            final DateTime nowTime = new DateTime(now),expireTime = new DateTime(mDomainExpireDate);
             Days daysBetweenNowAndExpire = Days.daysBetween(nowTime,expireTime);
             
             int days = daysBetweenNowAndExpire.getDays();
@@ -166,13 +177,12 @@ public class Order implements QueryDbListener<Customer>  {
         }
         
         public boolean hasDomainExpired(){
-            if (!domainExists()){
+            if (!domainExists() || !isActivated()){
                 return false;
-            }
-            
+            }  
             
             final java.util.Date now = Calendar.getInstance().getTime();
-            return mExpireDomainDate.before(now) || mExpireDomainDate.equals(now) ;
+            return mDomainExpireDate.before(now) || mDomainExpireDate.equals(now) ;
         }
         
         public boolean isNoteValid(){
@@ -205,13 +215,9 @@ public class Order implements QueryDbListener<Customer>  {
 
     @Override
     public void failedToQuery(Throwable throwable) {
+        
     }
 
-        
-        
-        
-        
-    
 
     public static final class Builder {
         
@@ -225,6 +231,7 @@ public class Order implements QueryDbListener<Customer>  {
         private final int mId;
         private String mNote;
         private boolean mIsActivated = true;
+        private Date mHostingPackageExpireDate;
         
 
         public Builder(final int customerId , final int id) {
@@ -247,7 +254,10 @@ public class Order implements QueryDbListener<Customer>  {
                     .setDomainEndDate(order.getEndDomainDateMillis())
                     .setHostingPackage(order.hostingPackageId)
                     .setNote(order.note)
-                    .setTotalCost(order.totalCost);
+                    .setTotalCost(order.totalCost)
+                    .setHostingPackageEndDate(order.getHostingPackageEndDateMillis())
+                    .isActivated(order.isActivated())
+                    ;
                     
         }
         
@@ -289,6 +299,11 @@ public class Order implements QueryDbListener<Customer>  {
         
         public Builder isActivated(final boolean activated){
             mIsActivated = activated;
+            return this;
+        }
+        
+        public Builder setHostingPackageEndDate(final long endMillis){
+            mHostingPackageExpireDate = new Date(endMillis);
             return this;
         }
         

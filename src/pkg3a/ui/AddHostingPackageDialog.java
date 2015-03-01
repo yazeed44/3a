@@ -17,6 +17,8 @@ import pkg3a.utils.HostingPackage;
 public class AddHostingPackageDialog extends javax.swing.JDialog implements DBUtil.InsertDbListener {
 
     private AddHostingPackageCallback mCallback;
+    
+    
     /**
      * Creates new form AddHostingPackageDialog
      */
