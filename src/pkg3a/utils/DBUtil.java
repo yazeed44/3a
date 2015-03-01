@@ -34,7 +34,7 @@ public final class DBUtil {
     private static void initializeDb(){
         
         if (dbFile == null){
-            dbFile = new File(DBConstants.DB_NAME);
+            dbFile = new File(DB_NAME);
             System.out.println("Db file initialized " + dbFile.getAbsolutePath());
         }
         
@@ -54,7 +54,7 @@ public final class DBUtil {
             final SQLParts sqlParts = new SQLParts();
                 
                 sqlParts.append("INSERT INTO ")
-                .append(DBConstants.TABLE_HOSTING_PACKAGES)
+                .append(TABLE_HOSTING_PACKAGES)
                 .append("(name, storageSpace, monthlyOffer, emailsCount, yearCost ) ")
                 .append("VALUES(")
                 .appendParams(5)

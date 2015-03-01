@@ -9,12 +9,14 @@ package pkg3a.ui;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import pkg3a.ui.AddOrderDialog.AddDialogListener;
 import pkg3a.utils.DBUtil;
 import pkg3a.utils.DBUtil.QueryDbListener;
 import pkg3a.utils.Order;
+import pkg3a.utils.ViewUtil;
 
 /**
  *
@@ -90,20 +92,37 @@ public class Main extends MainInterface {
     
     public void addHostingPackage(){
         System.out.println("started adding hosting package ");
-        //TODO
+        AddHostingPackageDialog.showAddHostingPackageDialog(this, new AddHostingPackageDialog.AddHostingPackageCallback() {
+
+            @Override
+            public void addedSuccessfully(AddHostingPackageDialog dialog) {
+                updateHostingPackagesTable();
+                ViewUtil.disposeOfDialog(dialog);
+            }
+
+            @Override
+            public void failedToAdd(AddHostingPackageDialog dialog, Throwable throwable) {
+                
+            }
+
+            
+        });
         
     }
+    private void updateHostingPackagesTable() {
+        
+        mHostingPackagesPanel.onUpdateHostingPackagesTable((HostingPackagesTable) mHostingPackagesPanel.hostingPackagesTable);
+            }
     
     public void addCustomer(){
         System.out.println("started adding Customer ");
-        //TODO
         
         AddCustomerDialog.showAddCustomerDialog(this, new AddCustomerDialog.AddCustomerCallback() {
 
             @Override
             public void addedSuccessfully(AddCustomerDialog dialog) {
                 updateCustomersTable();
-                dialog.setVisible(false);
+                ViewUtil.disposeOfDialog(dialog);
             }
 
             @Override
@@ -120,7 +139,6 @@ public class Main extends MainInterface {
     
     public void addOrder() {
         System.out.println("started adding Order");
-        //TODO
         
         AddOrderDialog.showAddDialog(this,new AddDialogListener(){
 
@@ -129,7 +147,7 @@ public class Main extends MainInterface {
                 
                 System.out.println("Added order successfully");
                 updateOrdersTable();
-                dialog.setVisible(false);
+                ViewUtil.disposeOfDialog(dialog);
             }
 
             @Override
@@ -138,6 +156,8 @@ public class Main extends MainInterface {
             }
         });
     }
+    
+   
     
      void updateOrdersTable(){
         mOrdersPanel.onUpdate();

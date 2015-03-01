@@ -6,25 +6,23 @@
 package pkg3a.ui;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
-import pkg3a.utils.Customer;
 import pkg3a.utils.DBUtil;
 import pkg3a.utils.HostingPackage;
 import pkg3a.utils.Order;
+import pkg3a.utils.ViewUtil;
 
 /**
  *
  * @author yazeed44
  */
- public class HostingPackagesTable extends BaseTable {
+ public class HostingPackagesTable extends BaseTable implements EditHostingPackageDialog.EditHostingPackageCallback {
     
     private  ArrayList<HostingPackage> mHostingPackages;
     private final HostingPackagesCallback mCallback;
@@ -68,7 +66,7 @@ import pkg3a.utils.Order;
      
      private void showEditHostingPackageDialog(final HostingPackage selectedHostingPackage){
        SwingUtilities.invokeLater(() -> {
-          // EditHostingPackageDialog.showEditHostingPackageDialog(mMainFrame, selectedHostingPackage, HostingPackagesTable.this);
+           EditHostingPackageDialog.showEditHostingPackageDialog(mMainFrame, selectedHostingPackage, HostingPackagesTable.this);
        });
      }
      
@@ -114,7 +112,7 @@ import pkg3a.utils.Order;
                             
                             else {
                                 SwingUtilities.invokeLater(() -> {
-                                    final String dialogMsg = hostingPackage.name + "مرتبط بعمليات , هل تريد حذفها مع الباقة ؟";
+                                    final String dialogMsg = hostingPackage.name + "مرتبط بطلبيات , هل تريد حذفها مع الباقة ؟";
                                     
                                     final int result = JOptionPane.showConfirmDialog(HostingPackagesTable.this, dialogMsg, "تأكيد", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null);
                                     
@@ -172,6 +170,17 @@ import pkg3a.utils.Order;
     void updateTable(final ArrayList<HostingPackage> hostingPackages){
         mHostingPackages = hostingPackages;
         setupModel();
+    }
+
+    @Override
+    public void editedSuccessfully(EditHostingPackageDialog dialog) {
+        mCallback.onUpdateHostingPackagesTable(this);
+        ViewUtil.disposeOfDialog(dialog);
+    }
+
+    @Override
+    public void failedToEdit(EditHostingPackageDialog dialog, Throwable error) {
+        
     }
 
     private  class OnDeleteOnlyHostingPackage implements DBUtil.DeleteDbListener {
